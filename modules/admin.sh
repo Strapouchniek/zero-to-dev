@@ -38,6 +38,13 @@ _install_iterm_no_admin() {
     fi
 
     rm -rf "$tmpdir"
+
+    # Verify Apple code signature before trusting the downloaded app
+    if ! codesign --verify --deep --strict "$HOME/Applications/iTerm.app" 2>/dev/null; then
+        rm -rf "$HOME/Applications/iTerm.app"
+        return 1
+    fi
+
     xattr -dr com.apple.quarantine "$HOME/Applications/iTerm.app" 2>/dev/null || true
     return 0
 }
@@ -92,7 +99,7 @@ require_admin_or_migrate() {
     printf "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
     echo ""
     printf "  ${BOLD}1.${RESET}  Elevate your privileges using your company tool\n"
-    printf "      ${YELLOW}(Sanofi App Store…)${RESET}\n"
+    printf "      ${YELLOW}(your company App Store…)${RESET}\n"
     echo ""
     printf "      This Terminal window will close — ${BOLD}that's normal.${RESET}\n"
     echo ""

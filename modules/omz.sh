@@ -52,6 +52,12 @@ install_omz() {
         abort "Oh My Zsh installer download failed."
     fi
 
+    # Validate that the download is non-empty and looks like the real installer
+    if [[ ! -s "$_omz_installer" ]] || ! grep -q "oh-my-zsh" "$_omz_installer" 2>/dev/null; then
+        rm -f "$_omz_installer"
+        abort "Downloaded Oh My Zsh installer appears corrupted or truncated."
+    fi
+
     # ── Install ───────────────────────────────────────────────────────────
     info "Installing Oh My Zsh... (this may take a minute)"
     echo ""

@@ -63,6 +63,12 @@ install_homebrew() {
         abort "Homebrew installer download failed."
     fi
 
+    # Validate that the download is non-empty and looks like the real installer
+    if [[ ! -s "$_brew_installer" ]] || ! grep -q "HOMEBREW" "$_brew_installer" 2>/dev/null; then
+        rm -f "$_brew_installer"
+        abort "Downloaded Homebrew installer appears corrupted or truncated."
+    fi
+
     # ── Run the official installer ────────────────────────────────────────
     echo ""
     info "Running the Homebrew installer..."
