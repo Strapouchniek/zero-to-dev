@@ -42,6 +42,7 @@ source "$MODULES_DIR/utils.sh"
 LOG_FILE="/tmp/mac-dev-ready.log"
 export LOG_FILE
 : > "$LOG_FILE"
+chmod 600 "$LOG_FILE"
 
 # ── Welcome ───────────────────────────────────────────────────────────────────
 

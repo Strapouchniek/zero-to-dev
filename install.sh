@@ -6,7 +6,7 @@
 #   zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Strapouchniek/mac-dev-ready/main/install.sh)"
 # ==============================================================================
 
-set -e
+set -euo pipefail
 
 BASE_URL="https://raw.githubusercontent.com/Strapouchniek/mac-dev-ready/main"
 TMP_DIR="${TMPDIR:-/tmp}/mac-dev-ready-$$"
