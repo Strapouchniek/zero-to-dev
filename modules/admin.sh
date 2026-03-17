@@ -99,7 +99,7 @@ require_admin_or_migrate() {
     printf "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
     echo ""
     printf "  ${BOLD}1.${RESET}  Elevate your privileges using your company tool\n"
-    printf "      ${YELLOW}(your company App Store…)${RESET}\n"
+    printf "      ${YELLOW}(e.g. your company App Store…)${RESET}\n"
     echo ""
     printf "      This Terminal window will close — ${BOLD}that's normal.${RESET}\n"
     echo ""
@@ -114,5 +114,6 @@ require_admin_or_migrate() {
     echo ""
     info "See you in iTerm2!"
     echo ""
-    exit 0
+    # Exit code 10 signals "admin migration" so install.sh preserves the temp dir
+    exit 10
 }
