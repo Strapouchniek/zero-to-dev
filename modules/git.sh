@@ -20,8 +20,9 @@ install_git() {
         git_version="$(git --version)"
         success "Git is already installed via Homebrew ($git_version)."
 
-        info "Checking for updates..."
+        start_spinner "Checking for updates…"
         if brew upgrade git >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+            stop_spinner
             hash -r 2>/dev/null || true
             local new_version
             new_version="$(git --version)"
@@ -33,6 +34,7 @@ install_git() {
                 GIT_RESULT="already_installed"
             fi
         else
+            stop_spinner
             warn "Could not check for updates — this is non-critical, continuing."
             GIT_RESULT="already_installed"
         fi
@@ -62,10 +64,10 @@ install_git() {
     echo ""
 
     # ── Install via Homebrew ───────────────────────────────────────────────
-    info "Installing Git... (this may take a minute or two)"
-    echo ""
+    start_spinner "Installing Git — this may take a minute or two"
 
     if ! brew install git >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+        stop_spinner
         echo ""
         fail "Homebrew could not install Git."
         echo ""
@@ -76,12 +78,13 @@ install_git() {
         abort "Git installation failed."
     fi
 
+    stop_spinner
+
     # ── Verify installation ────────────────────────────────────────────────
     [[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
     hash -r 2>/dev/null || true
 
     if command -v git &>/dev/null; then
-        echo ""
         success "Git installed successfully!"
         success "Version: $(git --version)"
     else

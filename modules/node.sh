@@ -22,8 +22,9 @@ install_node() {
         npm_version="$(npm --version)"
         success "Node.js is already installed via Homebrew (Node $node_version, npm $npm_version)."
 
-        info "Checking for updates..."
+        start_spinner "Checking for updates…"
         if brew upgrade node >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+            stop_spinner
             hash -r 2>/dev/null || true
             local new_version
             new_version="$(node --version)"
@@ -35,6 +36,7 @@ install_node() {
                 NODE_RESULT="already_installed"
             fi
         else
+            stop_spinner
             warn "Could not check for updates — this is non-critical, continuing."
             NODE_RESULT="already_installed"
         fi
@@ -64,10 +66,10 @@ install_node() {
     echo ""
 
     # ── Install via Homebrew ───────────────────────────────────────────────
-    info "Installing Node.js... (this may take a few minutes)"
-    echo ""
+    start_spinner "Installing Node.js — this may take a few minutes"
 
     if ! brew install node >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+        stop_spinner
         echo ""
         fail "Homebrew could not install Node.js."
         echo ""
@@ -78,12 +80,13 @@ install_node() {
         abort "Node.js installation failed."
     fi
 
+    stop_spinner
+
     # ── Verify installation ────────────────────────────────────────────────
     [[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
     hash -r 2>/dev/null || true
 
     if command -v node &>/dev/null && command -v npm &>/dev/null; then
-        echo ""
         success "Node.js installed successfully!"
         success "Node version: $(node --version)"
         success "npm version:  $(npm --version)"

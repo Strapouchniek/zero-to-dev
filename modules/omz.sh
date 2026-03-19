@@ -59,13 +59,13 @@ install_omz() {
     fi
 
     # ── Install ───────────────────────────────────────────────────────────
-    info "Installing Oh My Zsh... (this may take a minute)"
-    echo ""
-
     # RUNZSH=no  — don't start a new zsh session mid-script (would hang)
     # CHSH=no    — don't change the default shell (already zsh on macOS)
+    start_spinner "Installing Oh My Zsh — this may take a minute"
+
     if ! RUNZSH=no CHSH=no sh "$_omz_installer" \
             >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+        stop_spinner
         rm -f "$_omz_installer"
         echo ""
         fail "The Oh My Zsh installer exited with an error."
@@ -78,6 +78,7 @@ install_omz() {
         abort "Oh My Zsh installation failed."
     fi
 
+    stop_spinner
     rm -f "$_omz_installer"
 
     # ── Verify installation ───────────────────────────────────────────────
