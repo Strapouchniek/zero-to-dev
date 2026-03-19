@@ -63,6 +63,87 @@ wait_for_user() {
     read -r
 }
 
+# ── Spinner ───────────────────────────────────────────────────────────────────
+
+_SPINNER_PID=""
+
+_cleanup_spinner() {
+    if [[ -n "$_SPINNER_PID" ]]; then
+        kill "$_SPINNER_PID" 2>/dev/null
+        wait "$_SPINNER_PID" 2>/dev/null
+        _SPINNER_PID=""
+        printf "\r\033[K"
+    fi
+}
+trap '_cleanup_spinner' EXIT
+
+start_spinner() {
+    local msg="$1"
+    _cleanup_spinner
+    (
+        local frames=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+        local i=1
+        while true; do
+            printf "\r${BLUE}%s${RESET}  %s" "${frames[$i]}" "$msg"
+            i=$(( i % ${#frames[@]} + 1 ))
+            sleep 0.08
+        done
+    ) &
+    _SPINNER_PID=$!
+}
+
+stop_spinner() {
+    if [[ -n "$_SPINNER_PID" ]]; then
+        kill "$_SPINNER_PID" 2>/dev/null
+        wait "$_SPINNER_PID" 2>/dev/null
+        _SPINNER_PID=""
+    fi
+    printf "\r\033[K"
+}
+
+# ── Animations ───────────────────────────────────────────────────────────────
+
+confetti() {
+    local cols lines
+    cols=$(tput cols 2>/dev/null)  || { printf "\n🎉  ${BOLD}${GREEN}Setup Complete!${RESET}  🎉\n\n"; return 0; }
+    lines=$(tput lines 2>/dev/null) || lines=24
+
+    local -a particles=("✦" "•" "✶" "◆" "★" "●" "✸" "◇" "♦" "✺")
+    local -a colors=(
+        '\033[1;31m' '\033[1;32m' '\033[1;33m'
+        '\033[1;34m' '\033[1;35m' '\033[1;36m'
+        '\033[0;31m' '\033[0;32m' '\033[0;33m'
+        '\033[0;34m' '\033[0;35m' '\033[0;36m'
+    )
+    local n_particles=${#particles[@]}
+    local n_colors=${#colors[@]}
+
+    tput civis 2>/dev/null
+    clear
+
+    local msg="🎉  Setup Complete!  🎉"
+    local msg_row=$((lines / 2))
+    local msg_col=$(( (cols - 24) / 2 ))
+    [[ $msg_col -lt 0 ]] && msg_col=0
+    tput cup $msg_row $msg_col 2>/dev/null
+    printf "${BOLD}${GREEN}%s${RESET}" "$msg"
+
+    local i row col pidx cidx
+    for i in $(seq 1 100); do
+        row=$((RANDOM % lines))
+        col=$((RANDOM % (cols - 1) ))
+        pidx=$((RANDOM % n_particles + 1))
+        cidx=$((RANDOM % n_colors + 1))
+        tput cup $row $col 2>/dev/null
+        printf "${colors[$cidx]}%s${RESET}" "${particles[$pidx]}"
+        sleep 0.02
+    done
+
+    sleep 0.8
+    tput cnorm 2>/dev/null
+    clear
+}
+
 # ── Requirement checks ───────────────────────────────────────────────────────
 
 require_macos() {

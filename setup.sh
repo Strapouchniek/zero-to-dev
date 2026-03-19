@@ -57,7 +57,7 @@ echo "  ║   This script will install the tools you need    ║"
 echo "  ║   to work with Cursor and create Pull Requests   ║"
 echo "  ║   on GitHub.                                     ║"
 echo "  ║                                                  ║"
-printf "  ║              made with ${RED}<3${RESET}${BOLD} by nicochat            ║\n"
+printf "  ║              made with ${RED}<3${RESET}${BOLD} by Nicolas            ║\n"
 echo "  ╚══════════════════════════════════════════════════╝"
 printf "${RESET}"
 echo ""
@@ -117,6 +117,8 @@ install_omz
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 
+confetti
+
 header "Setup Complete"
 
 success "All available steps finished successfully!"
@@ -142,3 +144,10 @@ echo ""
 info "If you hit any issues, share the following file with your team:"
 info "  ${LOG_FILE}"
 echo ""
+printf "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
+echo ""
+info "Got questions? Want to connect?"
+echo ""
+printf "${YELLOW}▸${RESET}  ${BOLD}Press Enter to visit my LinkedIn profile...${RESET}"
+read -r
+open "https://www.linkedin.com/in/nicolas-chatel1/"
