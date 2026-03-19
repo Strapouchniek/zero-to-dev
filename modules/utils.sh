@@ -83,8 +83,10 @@ start_spinner() {
     (
         local frames=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
         local i=1
+        local start=$SECONDS
         while true; do
-            printf "\r${BLUE}%s${RESET}  %s" "${frames[$i]}" "$msg"
+            local elapsed=$(( SECONDS - start ))
+            printf "\r\033[K${BLUE}%s${RESET}  %s ${BOLD}(%ds)${RESET}" "${frames[$i]}" "$msg" "$elapsed"
             i=$(( i % ${#frames[@]} + 1 ))
             sleep 0.08
         done
@@ -108,7 +110,8 @@ confetti() {
     cols=$(tput cols 2>/dev/null)  || { printf "\n🎉  ${BOLD}${GREEN}Setup Complete!${RESET}  🎉\n\n"; return 0; }
     lines=$(tput lines 2>/dev/null) || lines=24
 
-    local -a particles=("✦" "•" "✶" "◆" "★" "●" "✸" "◇" "♦" "✺")
+    local -a particles=("✦" "•" "✶" "◆" "★" "●" "✸" "◇" "♦" "✺" "❖" "✧" "⬥" "⬦")
+    local -a emojis=("🎉" "🎊" "✨" "🌟" "⭐" "💫" "🥳" "🪅" "🎆" "🎇")
     local -a colors=(
         '\033[1;31m' '\033[1;32m' '\033[1;33m'
         '\033[1;34m' '\033[1;35m' '\033[1;36m'
@@ -116,30 +119,91 @@ confetti() {
         '\033[0;34m' '\033[0;35m' '\033[0;36m'
     )
     local n_particles=${#particles[@]}
+    local n_emojis=${#emojis[@]}
     local n_colors=${#colors[@]}
+    local center_row=$((lines / 2))
+    local center_col=$((cols / 2))
 
     tput civis 2>/dev/null
     clear
 
-    local msg="🎉  Setup Complete!  🎉"
-    local msg_row=$((lines / 2))
-    local msg_col=$(( (cols - 24) / 2 ))
-    [[ $msg_col -lt 0 ]] && msg_col=0
-    tput cup $msg_row $msg_col 2>/dev/null
-    printf "${BOLD}${GREEN}%s${RESET}" "$msg"
-
-    local i row col pidx cidx
-    for i in $(seq 1 100); do
-        row=$((RANDOM % lines))
-        col=$((RANDOM % (cols - 1) ))
-        pidx=$((RANDOM % n_particles + 1))
-        cidx=$((RANDOM % n_colors + 1))
-        tput cup $row $col 2>/dev/null
-        printf "${colors[$cidx]}%s${RESET}" "${particles[$pidx]}"
-        sleep 0.02
+    # ── Phase 1: Rocket launch ────────────────────────────────────────────
+    local rocket_col=$((center_col - 1))
+    local r
+    for r in $(seq $((lines - 1)) -1 $((center_row + 2))); do
+        tput cup "$r" "$rocket_col" 2>/dev/null
+        printf "🚀"
+        sleep 0.03
+        tput cup "$r" "$rocket_col" 2>/dev/null
+        printf "  "
     done
 
-    sleep 0.8
+    # ── Phase 2: Explosion burst from center ──────────────────────────────
+    local ring radius angle row col pidx cidx
+    for radius in 2 4 6 8 11 14; do
+        for angle in $(seq 0 30 330); do
+            row=$(( center_row + (radius * (angle % 180 < 90 ? 1 : -1)) / 3 ))
+            col=$(( center_col + (radius * (angle < 180 ? 1 : -1)) ))
+            row=$(( row + (RANDOM % 3) - 1 ))
+            col=$(( col + (RANDOM % 3) - 1 ))
+            [[ $row -lt 0 || $row -ge $lines ]] && continue
+            [[ $col -lt 0 || $col -ge $cols ]] && continue
+            pidx=$((RANDOM % n_particles + 1))
+            cidx=$((RANDOM % n_colors + 1))
+            tput cup "$row" "$col" 2>/dev/null
+            printf "${colors[$cidx]}%s${RESET}" "${particles[$pidx]}"
+        done
+        sleep 0.06
+    done
+
+    # ── Phase 3: Center message with border ───────────────────────────────
+    local box_w=40
+    local box_h=5
+    local box_top=$(( center_row - box_h / 2 ))
+    local box_left=$(( center_col - box_w / 2 ))
+    [[ $box_left -lt 0 ]] && box_left=0
+
+    local line_i
+    for line_i in $(seq 0 $((box_h - 1))); do
+        tput cup $((box_top + line_i)) $box_left 2>/dev/null
+        printf "%${box_w}s" " "
+    done
+
+    tput cup $box_top $box_left 2>/dev/null
+    printf "${BOLD}${GREEN}╔══════════════════════════════════════╗${RESET}"
+    tput cup $((box_top + 1)) $box_left 2>/dev/null
+    printf "${BOLD}${GREEN}║                                      ║${RESET}"
+    tput cup $((box_top + 2)) $box_left 2>/dev/null
+    printf "${BOLD}${GREEN}║      🎉  Setup Complete!  🎉        ║${RESET}"
+    tput cup $((box_top + 3)) $box_left 2>/dev/null
+    printf "${BOLD}${GREEN}║                                      ║${RESET}"
+    tput cup $((box_top + 4)) $box_left 2>/dev/null
+    printf "${BOLD}${GREEN}╚══════════════════════════════════════╝${RESET}"
+
+    # ── Phase 4: Dense confetti rain + emojis ─────────────────────────────
+    local i eidx
+    for i in $(seq 1 200); do
+        row=$((RANDOM % lines))
+        col=$((RANDOM % (cols - 1)))
+        # Skip the center message area
+        if [[ $row -ge $box_top && $row -le $((box_top + box_h)) \
+            && $col -ge $box_left && $col -le $((box_left + box_w)) ]]; then
+            continue
+        fi
+        if (( i % 8 == 0 )); then
+            eidx=$((RANDOM % n_emojis + 1))
+            tput cup "$row" "$col" 2>/dev/null
+            printf "%s" "${emojis[$eidx]}"
+        else
+            pidx=$((RANDOM % n_particles + 1))
+            cidx=$((RANDOM % n_colors + 1))
+            tput cup "$row" "$col" 2>/dev/null
+            printf "${colors[$cidx]}%s${RESET}" "${particles[$pidx]}"
+        fi
+        sleep 0.012
+    done
+
+    sleep 1.5
     tput cnorm 2>/dev/null
     clear
 }

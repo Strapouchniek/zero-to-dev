@@ -18,10 +18,12 @@ install_homebrew() {
         brew_version="$(brew --version | head -1)"
         success "Homebrew is already installed ($brew_version)."
 
-        info "Updating Homebrew to the latest version..."
-        if brew update &>/dev/null; then
+        start_spinner "Updating Homebrew to the latest version…"
+        if brew update >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+            stop_spinner
             success "Homebrew is up to date."
         else
+            stop_spinner
             warn "Homebrew update failed — this is non-critical, continuing."
         fi
         HOMEBREW_RESULT="already_installed"
@@ -50,9 +52,10 @@ install_homebrew() {
     local _brew_installer
     _brew_installer=$(mktemp)
 
-    info "Downloading the Homebrew installer..."
+    start_spinner "Downloading the Homebrew installer…"
     if ! curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh \
             -o "$_brew_installer"; then
+        stop_spinner
         rm -f "$_brew_installer"
         fail "Could not download the Homebrew installer."
         echo ""
@@ -62,6 +65,9 @@ install_homebrew() {
         echo ""
         abort "Homebrew installer download failed."
     fi
+
+    stop_spinner
+    success "Homebrew installer downloaded."
 
     # Validate that the download is non-empty and looks like the real installer
     if [[ ! -s "$_brew_installer" ]] || ! grep -q "HOMEBREW" "$_brew_installer" 2>/dev/null; then

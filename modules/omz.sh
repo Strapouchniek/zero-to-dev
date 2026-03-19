@@ -39,9 +39,10 @@ install_omz() {
     local _omz_installer
     _omz_installer=$(mktemp)
 
-    info "Downloading the Oh My Zsh installer..."
+    start_spinner "Downloading the Oh My Zsh installer…"
     if ! curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
             -o "$_omz_installer"; then
+        stop_spinner
         rm -f "$_omz_installer"
         fail "Could not download the Oh My Zsh installer."
         echo ""
@@ -51,6 +52,9 @@ install_omz() {
         echo ""
         abort "Oh My Zsh installer download failed."
     fi
+
+    stop_spinner
+    success "Oh My Zsh installer downloaded."
 
     # Validate that the download is non-empty and looks like the real installer
     if [[ ! -s "$_omz_installer" ]] || ! grep -q "oh-my-zsh" "$_omz_installer" 2>/dev/null; then
