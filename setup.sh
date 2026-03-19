@@ -1,12 +1,12 @@
 #!/bin/zsh
 # ==============================================================================
 #
-#   Mac Dev Ready
-#   One-command setup for non-technical team members.
+#   Zero to Dev
+#   One-command setup for non-tech folks — installs the dev prerequisites.
 #
 #   Usage (local):   zsh setup.sh
 #   Usage (remote):  Clone the repo first, then run:
-#                    MAC_DEV_READY_DIR=/path/to/mac-dev-ready zsh setup.sh
+#                    ZERO_TO_DEV_DIR=/path/to/zero-to-dev zsh setup.sh
 #
 # ==============================================================================
 
@@ -14,12 +14,12 @@ set -euo pipefail
 
 # ── Resolve script location ──────────────────────────────────────────────────
 # When run locally, ${0:a:h} gives the script's directory.
-# When piped from curl, $0 is "-zsh" so we fall back to MAC_DEV_READY_DIR or pwd.
+# When piped from curl, $0 is "-zsh" so we fall back to ZERO_TO_DEV_DIR or pwd.
 
 if [[ -f "${0:a}" ]]; then
     SCRIPT_DIR="${0:a:h}"
-elif [[ -n "${MAC_DEV_READY_DIR:-}" ]]; then
-    SCRIPT_DIR="$MAC_DEV_READY_DIR"
+elif [[ -n "${ZERO_TO_DEV_DIR:-}" ]]; then
+    SCRIPT_DIR="$ZERO_TO_DEV_DIR"
 else
     SCRIPT_DIR="$(pwd)"
 fi
@@ -29,7 +29,7 @@ MODULES_DIR="$SCRIPT_DIR/modules"
 # ── Source shared utilities ───────────────────────────────────────────────────
 if [[ ! -f "$MODULES_DIR/utils.sh" ]]; then
     echo "Error: Could not find modules/utils.sh"
-    echo "Make sure you run this script from the mac-dev-ready/ directory,"
+    echo "Make sure you run this script from the zero-to-dev/ directory,"
     echo "or that the modules/ folder is next to setup.sh."
     exit 1
 fi
@@ -39,7 +39,7 @@ source "$MODULES_DIR/utils.sh"
 # ── Log file ──────────────────────────────────────────────────────────────────
 # Installer output is redirected here so non-technical users don't see a wall
 # of text. On failure, users are asked to share this file with their team.
-LOG_FILE="/tmp/mac-dev-ready.log"
+LOG_FILE="/tmp/zero-to-dev.log"
 export LOG_FILE
 : > "$LOG_FILE"
 chmod 600 "$LOG_FILE"
@@ -51,11 +51,11 @@ echo ""
 printf "${BOLD}"
 echo "  ╔══════════════════════════════════════════════════╗"
 echo "  ║                                                  ║"
-echo "  ║                  Mac Dev Ready                   ║"
+echo "  ║                  Zero to Dev                     ║"
+echo "  ║     One-command setup for non-tech folks.        ║"
 echo "  ║                                                  ║"
-echo "  ║   This script will install the tools you need    ║"
-echo "  ║   to work with Cursor and create Pull Requests   ║"
-echo "  ║   on GitHub.                                     ║"
+echo "  ║   Installs the prerequisites for Cursor,           ║"
+echo "  ║   Claude Code, GitHub, and more.                 ║"
 echo "  ║                                                  ║"
 printf "  ║              made with ${RED}<3${RESET}${BOLD} by Nicolas            ║\n"
 echo "  ╚══════════════════════════════════════════════════╝"

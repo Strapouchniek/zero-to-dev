@@ -23,7 +23,7 @@ install_node() {
         success "Node.js is already installed via Homebrew (Node $node_version, npm $npm_version)."
 
         start_spinner "Checking for updates…"
-        if brew upgrade node >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+        if brew upgrade node >> "${LOG_FILE:-/tmp/zero-to-dev.log}" 2>&1; then
             stop_spinner
             hash -r 2>/dev/null || true
             local new_version
@@ -68,7 +68,7 @@ install_node() {
     # ── Install via Homebrew ───────────────────────────────────────────────
     start_spinner "Installing Node.js — this may take a few minutes"
 
-    if ! brew install node >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+    if ! brew install node >> "${LOG_FILE:-/tmp/zero-to-dev.log}" 2>&1; then
         stop_spinner
         echo ""
         fail "Homebrew could not install Node.js."
