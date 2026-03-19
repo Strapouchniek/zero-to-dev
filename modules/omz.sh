@@ -68,7 +68,7 @@ install_omz() {
     start_spinner "Installing Oh My Zsh — this may take a minute"
 
     if ! RUNZSH=no CHSH=no sh "$_omz_installer" \
-            >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+            >> "${LOG_FILE:-/tmp/zero-to-dev.log}" 2>&1; then
         stop_spinner
         rm -f "$_omz_installer"
         echo ""

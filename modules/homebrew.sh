@@ -19,7 +19,7 @@ install_homebrew() {
         success "Homebrew is already installed ($brew_version)."
 
         start_spinner "Updating Homebrew to the latest version…"
-        if brew update >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+        if brew update >> "${LOG_FILE:-/tmp/zero-to-dev.log}" 2>&1; then
             stop_spinner
             success "Homebrew is up to date."
         else

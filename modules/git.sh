@@ -21,7 +21,7 @@ install_git() {
         success "Git is already installed via Homebrew ($git_version)."
 
         start_spinner "Checking for updates…"
-        if brew upgrade git >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+        if brew upgrade git >> "${LOG_FILE:-/tmp/zero-to-dev.log}" 2>&1; then
             stop_spinner
             hash -r 2>/dev/null || true
             local new_version
@@ -66,7 +66,7 @@ install_git() {
     # ── Install via Homebrew ───────────────────────────────────────────────
     start_spinner "Installing Git — this may take a minute or two"
 
-    if ! brew install git >> "${LOG_FILE:-/tmp/mac-dev-ready.log}" 2>&1; then
+    if ! brew install git >> "${LOG_FILE:-/tmp/zero-to-dev.log}" 2>&1; then
         stop_spinner
         echo ""
         fail "Homebrew could not install Git."

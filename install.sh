@@ -1,18 +1,18 @@
 #!/bin/zsh
 # ==============================================================================
-# Mac Dev Ready — Bootstrap installer
+# Zero to Dev — Bootstrap installer
 # Run this on a fresh Mac with nothing installed. Uses only curl + zsh (default).
 #
-#   zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Strapouchniek/mac-dev-ready/main/install.sh)"
+#   zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Strapouchniek/zero-to-dev/main/install.sh)"
 # ==============================================================================
 
 set -euo pipefail
 
-BASE_URL="https://raw.githubusercontent.com/Strapouchniek/mac-dev-ready/main"
-TMP_DIR="${TMPDIR:-/tmp}/mac-dev-ready-$$"
+BASE_URL="https://raw.githubusercontent.com/Strapouchniek/zero-to-dev/main"
+TMP_DIR="${TMPDIR:-/tmp}/zero-to-dev-$$"
 MODULES="utils admin xcode homebrew git node omz"
 
-echo "Downloading Mac Dev Ready..."
+echo "Downloading Zero to Dev..."
 mkdir -p "$TMP_DIR/modules"
 
 curl -fsSL -o "$TMP_DIR/setup.sh" "$BASE_URL/setup.sh"
@@ -23,7 +23,7 @@ done
 chmod +x "$TMP_DIR/setup.sh"
 
 rc=0
-MAC_DEV_READY_DIR="$TMP_DIR" zsh "$TMP_DIR/setup.sh" || rc=$?
+ZERO_TO_DEV_DIR="$TMP_DIR" zsh "$TMP_DIR/setup.sh" || rc=$?
 
 if [[ $rc -eq 10 ]]; then
   # Admin migration: user must elevate privileges and re-run in iTerm2.
