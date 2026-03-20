@@ -16,7 +16,7 @@ That's it. The script will guide you through every step.
 
 > **Don't know how to open Terminal?** Press `Cmd + Space`, type `Terminal`, press Enter.
 
-> **On a managed Mac (e.g. Sanofi)?** The script will detect if you need to elevate your privileges and guide you automatically.
+> **On a managed Mac (e.g. Company)?** The script will detect if you need to elevate your privileges and guide you automatically.
 
 ## What gets installed
 
